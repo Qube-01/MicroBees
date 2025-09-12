@@ -6,6 +6,10 @@ pipeline {
         maven 'Maven3'
     }
 
+    environment {
+        SONAR_AUTH_TOKEN = credentials('SONAR_AUTH_TOKEN')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -32,7 +36,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarCloud') {
+                withSonarQubeEnv('SonarCloud') {  // Jenkins SonarCloud server name
                     sh """
                         mvn sonar:sonar \
                           -Dsonar.projectKey=MicroBees \
@@ -44,7 +48,7 @@ pipeline {
             }
         }
 
-        stage("Quality Gate") {
+        stage('Quality Gate') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
