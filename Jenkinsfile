@@ -6,10 +6,6 @@ pipeline {
         maven 'Maven3'
     }
 
-    environment {
-        SONAR_AUTH_TOKEN = credentials('SONAR_AUTH_TOKEN')
-    }
-
     stages {
         stage('Checkout') {
             steps {
