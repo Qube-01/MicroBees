@@ -36,17 +36,18 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarCloud') {  // Jenkins SonarCloud server name
+                withSonarQubeEnv('SonarCloud') {
                     sh """
-                        mvn sonar:sonar \
-                          -Dsonar.projectKey=MicroBees \
-                          -Dsonar.organization=Qube-01 \
-                          -Dsonar.host.url=https://sonarcloud.io \
-                          -Dsonar.login=${SONAR_AUTH_TOKEN}
+                        mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                            -Dsonar.token=${SONAR_AUTH_TOKEN} \
+                            -Dsonar.host.url=https://sonarcloud.io \
+                            -Dsonar.organization=qube-01 \
+                            -Dsonar.projectKey=Qube-01_MicroBees
                     """
                 }
             }
         }
+
 
         stage('Quality Gate') {
             steps {
