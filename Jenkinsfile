@@ -55,12 +55,32 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                sh 'mvn -s $WORKSPACE/settings.xml -B test'
+                sh 'mvn -s $WORKSPACE/settings.xml -B test jacoco:report'
             }
             post {
                 always {
                     junit '**/target/surefire-reports/*.xml'
                 }
+            }
+        }
+
+        stage('Enforce Coverage') {
+            steps {
+                // Fail the build if coverage < 80%
+                sh '''
+                    LINE=$(grep -A 1 "<counter type=\\"INSTRUCTION\\"" target/site/jacoco/jacoco.xml | grep covered)
+                    COVERED=$(echo $LINE | sed -n 's/.*covered="\\([0-9]*\\)".*/\\1/p')
+                    MISSED=$(echo $LINE | sed -n 's/.*missed="\\([0-9]*\\)".*/\\1/p')
+                    TOTAL=$((COVERED + MISSED))
+                    PERCENT=$((COVERED * 100 / TOTAL))
+
+                    echo "Coverage: $PERCENT%"
+
+                    if [ $PERCENT -lt 80 ]; then
+                      echo "Coverage ($PERCENT%) is below 80% threshold!"
+                      exit 1
+                    fi
+                '''
             }
         }
 
