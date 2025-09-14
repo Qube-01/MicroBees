@@ -25,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Remove local-maven-repo (if present)') {
+        stage('Remove local-maven-repo') {
             steps {
                 sh '''
                     if [ -d "${WORKSPACE}/local-maven-repo" ]; then
@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-        stage('Build (compile & package)') {
+        stage('Build') {
             steps {
                 sh 'mvn -s $WORKSPACE/settings.xml -B -V -DskipTests=true clean package'
             }
@@ -64,7 +64,7 @@ pipeline {
             }
         }
 
-        stage('Enforce Coverage') {
+        stage('Coverage Check') {
             steps {
                 sh '''
                     LINE=$(grep -A 1 "<counter type=\\"INSTRUCTION\\"" target/site/jacoco/jacoco.xml | grep covered)
@@ -126,15 +126,6 @@ pipeline {
         stage('Archive') {
             steps {
                 archiveArtifacts artifacts: 'target/**/*.jar', fingerprint: true
-            }
-        }
-
-        stage('Deploy (to Artifactory)') {
-            when {
-                branch 'main'
-            }
-            steps {
-                sh 'mvn -s $WORKSPACE/settings.xml -B -DskipTests=true deploy'
             }
         }
 
