@@ -1,6 +1,7 @@
 package org.qube.microbeesapplication.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.qube.microbeesapplication.models.dto.TokenDto;
 import org.qube.microbeesapplication.models.dto.UserInfoDto;
@@ -19,6 +20,7 @@ import java.util.Map;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1/microBees")
+@Generated
 public class UserInfoController {
 
     private final UserInfoService userInfoService;

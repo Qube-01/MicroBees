@@ -1,6 +1,7 @@
 package org.qube.microbeesapplication.config;
 
 import com.mongodb.client.MongoClients;
+import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -22,6 +23,7 @@ import static org.qube.microbeesapplication.utils.Constants.CONTAINER_PREFIX;
 
 @Slf4j
 @Component
+@Generated
 public class MultiTenantMongoTemplate {
 
     private final Map<String, MongoTemplate> mongoTemplateMap = new ConcurrentHashMap<>();

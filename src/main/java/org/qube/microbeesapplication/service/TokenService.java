@@ -1,6 +1,7 @@
 package org.qube.microbeesapplication.service;
 
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.qube.microbeesapplication.config.MultiTenantMongoTemplate;
 import org.qube.microbeesapplication.config.TokenUtils;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @AllArgsConstructor
 @Service
+@Generated
 public class TokenService {
 
     private final MultiTenantMongoTemplate  mongoTemplate;

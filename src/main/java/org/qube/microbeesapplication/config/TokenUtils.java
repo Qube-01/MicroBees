@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.Generated;
 import org.qube.microbeesapplication.models.jpa.UserInfoJpa;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 
 
 @Component
+@Generated
 public class TokenUtils {
 
     private static final String MONGO_AUTH_SECRET_KEY = "jwt*_mongo-auth*private-#key_template";
