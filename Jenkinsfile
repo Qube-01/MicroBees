@@ -158,8 +158,14 @@ pipeline {
         }
 
         stage('Login to CF') {
+            environment {
+                CF_ENV = credentials('$CF_ENV')
+                CF_USER = credentials('$CF_USER')
+                CF_PASSWORD = credentials('$CF_PASSWORD')
+                CF_SPACE = credentials('$CF_SPACE')
+            }
             steps {
-                sh '''cf login -a ${CF_ENV} -u ${CF_USER} -p ${CF_PASSWORD} -s ${CF_SPACE}'''
+                sh 'cf login -a $CF_ENV -u $CF_USER -p $CF_PASSWORD -s $CF_SPACE'
             }
         }
 
