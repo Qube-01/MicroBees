@@ -14,7 +14,6 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 @Service
-@Generated
 public class UserInfoService {
 
     private final MultiTenantMongoTemplate mongoTemplate;

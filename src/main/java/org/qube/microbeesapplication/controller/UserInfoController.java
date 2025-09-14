@@ -20,7 +20,6 @@ import java.util.Map;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1/microBees")
-@Generated
 public class UserInfoController {
 
     private final UserInfoService userInfoService;
