@@ -1,5 +1,6 @@
 package org.qube.microbeesapplication.service;
 
+import lombok.Generated;
 import org.springframework.dao.DuplicateKeyException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 @Service
+@Generated
 public class UserInfoService {
 
     private final MultiTenantMongoTemplate mongoTemplate;
