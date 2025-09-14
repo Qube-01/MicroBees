@@ -3,53 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.sap.sgs</groupId>
-        <artifactId>security-patched-spring-boot-starter</artifactId>
-        <version>3.3.11-sap-01</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/>
     </parent>
-
     <groupId>org.qube</groupId>
     <artifactId>MicroBeesApplication</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>MicroBeesApplication</name>
     <description>MicroBeesApplication</description>
-
-    <repositories>
-        <repository>
-            <id>artifactory.build.releases</id>
-            <name>Artifactory Build Releases</name>
-            <url>https://common.repositories.cloud.sap/build.releases/</url>
-        </repository>
-        <repository>
-            <id>artifactory.deploy.releases</id>
-            <name>Artifactory Deploy Releases</name>
-            <url>https://common.repositories.cloud.sap/deploy.releases/</url>
-        </repository>
-        <repository>
-            <id>artifactory.build.releases.ngdbc</id>
-            <name>Artifactory Build Releases</name>
-            <url>https://common.repositories.cloud.sap/sfsf-lms-thirdparty-local-maven/</url>
-        </repository>
-        <repository>
-            <id>artifactory.maven.central.cache</id>
-            <name>Artifactory Maven Central Cache</name>
-            <url>https://common.repositories.cloud.sap/maven-central-cache/</url>
-        </repository>
-        <repository>
-            <id>artifactory.deploy.milestone</id>
-            <name>Artifactory Deploy Milestone</name>
-            <url>https://common.repositories.cloud.sap/deploy.milestones.xmake</url>
-        </repository>
-        <repository>
-            <id>artifactory.deploy-releases-hyperspace-generic</id>
-            <name>Artifactory Deploy Releases Generic</name>
-            <url>https://common.repositories.cloud.sap/deploy-releases-hyperspace-generic/</url>
-        </repository>
-        <repository><!-- TODO This has to be removed once auditlog-common is available in commons repo -->
-            <id>local-maven-repo</id>
-            <url>file:///${project.basedir}/local-maven-repo</url>
-        </repository>
-    </repositories>
     <url/>
     <licenses>
         <license/>
@@ -95,6 +58,24 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>

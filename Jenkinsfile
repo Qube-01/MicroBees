@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'sapmachine-17'
+        jdk 'jdk17'
         maven 'Maven3'
     }
 
@@ -66,7 +66,6 @@ pipeline {
 
         stage('Enforce Coverage') {
             steps {
-                // Fail the build if coverage < 80%
                 sh '''
                     LINE=$(grep -A 1 "<counter type=\\"INSTRUCTION\\"" target/site/jacoco/jacoco.xml | grep covered)
                     COVERED=$(echo $LINE | sed -n 's/.*covered="\\([0-9]*\\)".*/\\1/p')

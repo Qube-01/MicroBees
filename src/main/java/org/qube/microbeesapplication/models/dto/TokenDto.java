@@ -7,14 +7,11 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties
-public class UserInfoDto {
+public class TokenDto {
 
     @JsonProperty("name")
     @NotBlank
     private String firstName;
-
-    @JsonProperty("lastName")
-    private String lastName;
 
     @JsonProperty("mailId")
     @NotBlank
