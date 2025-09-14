@@ -102,8 +102,23 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    timeout(time: 15, unit: 'MINUTES') {
+                        def qgStatus = null
+                        while (qgStatus == null || qgStatus == 'IN_PROGRESS') {
+                            sleep 15
+                            try {
+                                def qg = waitForQualityGate()
+                                qgStatus = qg.status
+                                echo "Current Quality Gate status: ${qgStatus}"
+                                if (qgStatus != 'IN_PROGRESS' && qgStatus != 'OK') {
+                                    error "Quality Gate failed: ${qgStatus}"
+                                }
+                            } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+                                error "Pipeline aborted due to timeout"
+                            }
+                        }
+                    }
                 }
             }
         }
