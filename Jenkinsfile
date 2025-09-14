@@ -55,7 +55,7 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                sh 'mvn -s $WORKSPACE/settings.xml -B test jacoco:report'
+                sh 'mvn -s $WORKSPACE/settings.xml -B test jacoco:report -Dspring.profiles.active=test'
             }
             post {
                 always {
