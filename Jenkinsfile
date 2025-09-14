@@ -144,7 +144,7 @@ pipeline {
 
         stage('Login to CF') {
             steps {
-                sh 'cf login -a ${CF_ENV} -u ${CF_USER} -p ${CF_PASSWORD} -s ${CF_SPACE}'
+                sh '''cf login -a ${CF_ENV} -u ${CF_USER} -p ${CF_PASSWORD} -s ${CF_SPACE}'''
             }
         }
 
