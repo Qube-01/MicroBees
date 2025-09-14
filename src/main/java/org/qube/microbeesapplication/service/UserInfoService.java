@@ -9,11 +9,10 @@ import org.qube.microbeesapplication.models.dto.UserInfoDto;
 import org.qube.microbeesapplication.models.jpa.UserInfoJpa;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Slf4j
 @AllArgsConstructor
 @Service
+@Generated
 public class UserInfoService {
 
     private final MultiTenantMongoTemplate mongoTemplate;

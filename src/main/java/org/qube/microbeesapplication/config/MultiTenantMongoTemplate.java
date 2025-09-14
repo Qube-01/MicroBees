@@ -23,6 +23,7 @@ import static org.qube.microbeesapplication.utils.Constants.CONTAINER_PREFIX;
 
 @Slf4j
 @Component
+@Generated
 public class MultiTenantMongoTemplate {
 
     private final Map<String, MongoTemplate> mongoTemplateMap = new ConcurrentHashMap<>();

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @AllArgsConstructor
 @Service
+@Generated
 public class TokenService {
 
     private final MultiTenantMongoTemplate  mongoTemplate;

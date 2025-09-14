@@ -171,7 +171,10 @@ pipeline {
 
         stage('Deploy to CF Environment') {
             steps {
-                sh 'cf push'
+                withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
+                    sh 'cf push'
+                    sh 'cf set-env microbees-service MONGODB_URI ${MONGODB_URI}'
+                }
             }
         }
 
