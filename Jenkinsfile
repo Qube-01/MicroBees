@@ -122,6 +122,49 @@ pipeline {
                 sh 'mvn -s $WORKSPACE/settings.xml -B -DskipTests=true deploy'
             }
         }
+
+        stage('User Approval for CF Deployment') {
+            steps {
+                script {
+                    def userInput = input(
+                        id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
+                        parameters: [
+                            choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
+                        ]
+                    )
+
+                    if (userInput == 'Decline') {
+                        error "Deployment declined by user."
+                    } else {
+                        echo "User approved deployment. Continuing..."
+                    }
+                }
+            }
+        }
+
+        stage('Login to CF') {
+            steps {
+                sh 'cf login -a ${CF_ENV} -u ${CF_USER} -p ${CF_PASSWORD} -s ${CF_SPACE}'
+            }
+        }
+
+        stage('Undeploy Existing App') {
+            steps {
+                sh 'cf delete microbees-service -f'
+            }
+        }
+
+        stage('Deploy to CF Environment') {
+            steps {
+                sh 'cf push'
+            }
+        }
+
+        stage('Create Application Route') {
+            steps {
+                sh 'cf map-route microbees-service de.a9sapp.eu --hostname microbees-service-live'
+            }
+        }
     }
 
     post {
