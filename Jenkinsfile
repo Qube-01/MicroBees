@@ -76,7 +76,7 @@ pipeline {
                     echo "Coverage: $PERCENT%"
 
                     if [ $PERCENT -lt 60 ]; then
-                      echo "Coverage ($PERCENT%) is below 80% threshold!"
+                      echo "Coverage ($PERCENT%) is below 60% threshold!"
                       exit 1
                     fi
                 '''
@@ -172,8 +172,9 @@ pipeline {
         stage('Deploy to CF Environment') {
             steps {
                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
-                    sh 'cf push'
+                    sh 'cf push microbees-service --no-start'
                     sh 'cf set-env microbees-service MONGODB_URI ${MONGODB_URI}'
+                    sh 'cf start microbees-service'
                 }
             }
         }
