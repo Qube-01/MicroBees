@@ -129,24 +129,24 @@ pipeline {
             }
         }
 
-        stage('User Approval for CF Deployment') {
-            steps {
-                script {
-                    def userInput = input(
-                        id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
-                        parameters: [
-                            choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
-                        ]
-                    )
-
-                    if (userInput == 'Decline') {
-                        error "Deployment declined by user."
-                    } else {
-                        echo "User approved deployment. Continuing..."
-                    }
-                }
-            }
-        }
+//         stage('User Approval for CF Deployment') {
+//             steps {
+//                 script {
+//                     def userInput = input(
+//                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
+//                         parameters: [
+//                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
+//                         ]
+//                     )
+//
+//                     if (userInput == 'Decline') {
+//                         error "Deployment declined by user."
+//                     } else {
+//                         echo "User approved deployment. Continuing..."
+//                     }
+//                 }
+//             }
+//         }
 
         stage('Login to CF') {
             steps {
@@ -169,7 +169,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to CF Environment') {
+        stage('Deploy to Production') {
             steps {
                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
                     sh 'cf push microbees-service --no-start'
