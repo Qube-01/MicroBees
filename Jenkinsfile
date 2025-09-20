@@ -138,31 +138,37 @@ pipeline {
         stage('Start Spring Boot') {
             steps {
                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
-                    sh """
-                      export MONGODB_URI='${MONGODB_URI}'
+                    sh '''
+                      export MONGODB_URI="${MONGODB_URI}"
 
-                      # Explicitly pass server.port=8000 to run on port 8000
-                      nohup mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8000 > springboot.log 2>&1 &
-                      SPRING_PID=\$!
+                      # Optional: check if port 8000 is free before start
+                      if lsof -i :8000; then
+                        echo "Port 8000 in use, killing existing process."
+                        lsof -ti :8000 | xargs kill -9
+                        sleep 5
+                      fi
+
+                      nohup mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dserver.port=8000" > springboot.log 2>&1 &
+                      SPRING_PID=$!
 
                       echo "Waiting for Spring Boot to start listening on port 8000..."
 
-                      # Wait up to 2 minutes for health endpoint on port 8000
-                      for i in {1..24}; do
-                        curl -f http://localhost:8000/actuator/health && break
-                        echo "Waiting... attempt \$i"
+                      for i in {1..36}; do
+                        if curl -fs http://localhost:8000/actuator/health; then
+                          echo "Spring Boot is UP!"
+                          break
+                        fi
+                        echo "Waiting... attempt $i"
                         sleep 5
+                        tail -n 10 springboot.log
                       done
 
-                      # Check process still running
-                      if ps -p \$SPRING_PID > /dev/null; then
-                        echo "Spring Boot started successfully!"
-                      else
-                        echo "Spring Boot failed to start, see springboot.log for details"
+                      if ! ps -p $SPRING_PID > /dev/null; then
+                        echo "Spring Boot process died unexpectedly."
                         cat springboot.log
                         exit 1
                       fi
-                    """
+                    '''
                 }
             }
         }
