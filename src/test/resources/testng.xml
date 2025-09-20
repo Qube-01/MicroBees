@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="MicroBeesTestSuite" parallel="methods" thread-count="3">
+    
+    <!-- API Test Suite -->
+    <test name="ApiTests" preserve-order="true">
+        <groups>
+            <run>
+                <include name="api"/>
+                <include name="integration"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.qube.microbeesapplication.api.UserInfoApiTests"/>
+            <class name="org.qube.microbeesapplication.integration.UserInfoServiceIntegrationTests"/>
+            <class name="org.qube.microbeesapplication.integration.MicroBeesControllerIntegrationTests"/>
+        </classes>
+    </test>
+    
+    <!-- Automation Test Suite -->
+    <test name="AutomationTests" preserve-order="true">
+        <groups>
+            <run>
+                <include name="automation"/>
+                <include name="e2e"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.qube.microbeesapplication.automation.MicroBeesPlaywrightTests"/>
+        </classes>
+    </test>
+    
+</suite>
