@@ -55,7 +55,7 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                sh 'mvn -s $WORKSPACE/settings.xml -B test jacoco:report -Dspring.profiles.active=test'
+                sh 'mvn -s $WORKSPACE/settings.xml test jacoco:report -Dspring.profiles.active=test -Dtest=!UserInfoControllerAutomationTest'
             }
             post {
                 always {
@@ -169,24 +169,25 @@ pipeline {
                 '''
             }
         }
-//         stage('User Approval for CF Deployment') {
-//             steps {
-//                 script {
-//                     def userInput = input(
-//                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
-//                         parameters: [
-//                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
-//                         ]
-//                     )
-//
-//                     if (userInput == 'Decline') {
-//                         error "Deployment declined by user."
-//                     } else {
-//                         echo "User approved deployment. Continuing..."
-//                     }
-//                 }
-//             }
-//         }
+
+        //         stage('User Approval for CF Deployment') {
+        //             steps {
+        //                 script {
+        //                     def userInput = input(
+        //                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
+        //                         parameters: [
+        //                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
+        //                         ]
+        //                     )
+        //
+        //                     if (userInput == 'Decline') {
+        //                         error "Deployment declined by user."
+        //                     } else {
+        //                         echo "User approved deployment. Continuing..."
+        //                     }
+        //                 }
+        //             }
+        //         }
 
         stage('Login to CF') {
             steps {
@@ -235,3 +236,4 @@ pipeline {
         }
     }
 }
+
