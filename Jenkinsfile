@@ -139,17 +139,28 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
                     sh """
-                        export MONGODB_URI=${MONGODB_URI}
-                        nohup mvn spring-boot:run &
+                      export MONGODB_URI='${MONGODB_URI}'
+                      nohup mvn spring-boot:run > springboot.log 2>&1 &
+                      SPRING_PID=\$!
+
+                      echo "Waiting for Spring Boot to start listening on port 8080..."
+
+                      # Retry until curl to health endpoint succeeds or timeout after 2 minutes
+                      for i in {1..24}; do
+                        curl -f http://localhost:8080/actuator/health && break
+                        echo "Waiting... attempt \$i"
+                        sleep 5
+                      done
+
+                      # Optional: check if spring boot process is still running or log output for troubleshooting
+                      if ps -p \$SPRING_PID > /dev/null; then
+                        echo "Spring Boot started successfully!"
+                      else
+                        echo "Spring Boot failed to start, see springboot.log for details"
+                        cat springboot.log
+                        exit 1
+                      fi
                     """
-                    sh '''
-                        STATUS=1
-                        until [ $STATUS -eq 0 ]; do
-                          curl -f http://localhost:8080/actuator/health
-                          STATUS=$?
-                          sleep 5
-                        done
-                    '''
                 }
             }
         }
