@@ -175,8 +175,9 @@ pipeline {
 
         stage('api tests') {
             steps {
-                // Test runs as before, activate test profile and test class
-                sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
+                withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
+                    sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
+                }
             }
             post {
                 always {
