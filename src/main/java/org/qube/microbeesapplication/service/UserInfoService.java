@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.qube.microbeesapplication.config.MultiTenantMongoTemplate;
 import org.qube.microbeesapplication.models.dto.UserInfoDto;
 import org.qube.microbeesapplication.models.jpa.UserInfoJpa;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -30,6 +32,17 @@ public class UserInfoService {
         } catch (Exception e) {
             log.error("Failed to store user info into database with message {}", e.getMessage());
             throw new Exception("Couldn't save user info");
+        }
+    }
+
+    public boolean deleteUserByEmail(String email, String tenantId) {
+        try {
+            Query query = Query.query(Criteria.where("email").is(email));
+            UserInfoJpa removed = mongoTemplate.getMongoTemplate(tenantId).findAndRemove(query, UserInfoJpa.class);
+            return removed != null;
+        } catch (Exception e) {
+            log.error("Error deleting user with email {}: {}", email, e.getMessage());
+            throw e;
         }
     }
 }

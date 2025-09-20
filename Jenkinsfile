@@ -129,24 +129,60 @@ pipeline {
             }
         }
 
-//         stage('User Approval for CF Deployment') {
-//             steps {
-//                 script {
-//                     def userInput = input(
-//                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
-//                         parameters: [
-//                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
-//                         ]
-//                     )
-//
-//                     if (userInput == 'Decline') {
-//                         error "Deployment declined by user."
-//                     } else {
-//                         echo "User approved deployment. Continuing..."
-//                     }
-//                 }
-//             }
-//         }
+        stage('Start Spring Boot') {
+            steps {
+                sh 'nohup mvn spring-boot:run &'
+                sh '''
+                    STATUS=1
+                    until [ $STATUS -eq 0 ]; do
+                      curl -f http://localhost:8080/actuator/health
+                      STATUS=$?
+                      sleep 5
+                    done
+                '''
+            }
+        }
+
+        stage('api tests') {
+            steps {
+                sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Stop Spring Boot') {
+            steps {
+                sh '''
+                    pid=$(lsof -ti :8080)
+                    if [ ! -z "$pid" ]; then
+                      kill $pid
+                    fi
+                '''
+            }
+        }
+
+        //         stage('User Approval for CF Deployment') {
+        //             steps {
+        //                 script {
+        //                     def userInput = input(
+        //                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
+        //                         parameters: [
+        //                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
+        //                         ]
+        //                     )
+        //
+        //                     if (userInput == 'Decline') {
+        //                         error "Deployment declined by user."
+        //                     } else {
+        //                         echo "User approved deployment. Continuing..."
+        //                     }
+        //                 }
+        //             }
+        //         }
 
         stage('Login to CF') {
             steps {

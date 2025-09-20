@@ -41,6 +41,23 @@ public class UserInfoController {
         }
     }
 
+    @DeleteMapping("/userInfo")
+    public ResponseEntity<?> deleteUser(
+            @RequestParam(name = "tenantId") String tenantId,
+            @RequestParam(name = "email") String email) {
+        try {
+            boolean deleted = userInfoService.deleteUserByEmail(email, tenantId);
+            if (deleted) {
+                return new ResponseEntity<>("User deleted successfully.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Failed to delete user: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/token")
     public ResponseEntity<?> createToken(@RequestParam(name = "tenantId") String tenantId,
                                                    @RequestBody TokenDto tokenDto) {
