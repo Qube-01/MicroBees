@@ -131,21 +131,26 @@ pipeline {
 
         stage('Start Spring Boot') {
             steps {
-                sh 'nohup mvn spring-boot:run &'
-                sh '''
-                    STATUS=1
-                    until [ $STATUS -eq 0 ]; do
-                      curl -f http://localhost:8080/actuator/health
-                      STATUS=$?
-                      sleep 5
-                    done
-                '''
+                withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
+                    sh """
+                        export MONGODB_URI=${MONGODB_URI}
+                        nohup mvn spring-boot:run &
+                    """
+                    sh '''
+                        STATUS=1
+                        until [ $STATUS -eq 0 ]; do
+                          curl -f http://localhost:8080/actuator/health
+                          STATUS=$?
+                          sleep 5
+                        done
+                    '''
+                }
             }
         }
 
         stage('api tests') {
             steps {
-                sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test'
+                sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
             }
             post {
                 always {
@@ -164,25 +169,24 @@ pipeline {
                 '''
             }
         }
-
-        //         stage('User Approval for CF Deployment') {
-        //             steps {
-        //                 script {
-        //                     def userInput = input(
-        //                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
-        //                         parameters: [
-        //                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
-        //                         ]
-        //                     )
-        //
-        //                     if (userInput == 'Decline') {
-        //                         error "Deployment declined by user."
-        //                     } else {
-        //                         echo "User approved deployment. Continuing..."
-        //                     }
-        //                 }
-        //             }
-        //         }
+//         stage('User Approval for CF Deployment') {
+//             steps {
+//                 script {
+//                     def userInput = input(
+//                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
+//                         parameters: [
+//                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
+//                         ]
+//                     )
+//
+//                     if (userInput == 'Decline') {
+//                         error "Deployment declined by user."
+//                     } else {
+//                         echo "User approved deployment. Continuing..."
+//                     }
+//                 }
+//             }
+//         }
 
         stage('Login to CF') {
             steps {
