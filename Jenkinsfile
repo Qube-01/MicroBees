@@ -140,19 +140,21 @@ pipeline {
                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
                     sh """
                       export MONGODB_URI='${MONGODB_URI}'
-                      nohup mvn spring-boot:run > springboot.log 2>&1 &
+
+                      # Explicitly pass server.port=8000 to run on port 8000
+                      nohup mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8000 > springboot.log 2>&1 &
                       SPRING_PID=\$!
 
-                      echo "Waiting for Spring Boot to start listening on port 8080..."
+                      echo "Waiting for Spring Boot to start listening on port 8000..."
 
-                      # Retry until curl to health endpoint succeeds or timeout after 2 minutes
+                      # Wait up to 2 minutes for health endpoint on port 8000
                       for i in {1..24}; do
-                        curl -f http://localhost:8080/actuator/health && break
+                        curl -f http://localhost:8000/actuator/health && break
                         echo "Waiting... attempt \$i"
                         sleep 5
                       done
 
-                      # Optional: check if spring boot process is still running or log output for troubleshooting
+                      # Check process still running
                       if ps -p \$SPRING_PID > /dev/null; then
                         echo "Spring Boot started successfully!"
                       else
@@ -167,6 +169,7 @@ pipeline {
 
         stage('api tests') {
             steps {
+                // Test runs as before, activate test profile and test class
                 sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
             }
             post {
@@ -179,7 +182,7 @@ pipeline {
         stage('Stop Spring Boot') {
             steps {
                 sh '''
-                    pid=$(lsof -ti :8080)
+                    pid=$(lsof -ti :8000)
                     if [ ! -z "$pid" ]; then
                       kill $pid
                     fi
