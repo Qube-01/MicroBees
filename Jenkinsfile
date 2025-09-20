@@ -55,7 +55,13 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                sh 'MONGODB_URI=mongodb+srv://kousikd2003_db_user:mUOQ5yQb7cE2ntIp@cluster0.xt9pqbq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 mvn -s $WORKSPACE/settings.xml test jacoco:report -Dspring.profiles.active=test -Dtest=!UserInfoControllerAutomationTest'
+                withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
+                    sh '''
+                        mvn -s $WORKSPACE/settings.xml test jacoco:report \
+                        -Dspring.profiles.active=test \
+                        -Dtest=!UserInfoControllerAutomationTest
+                    '''
+                }
             }
             post {
                 always {
