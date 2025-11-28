@@ -58,22 +58,21 @@ pipeline {
             }
         }
 
-//         stage('Unit Tests') {
-//             steps {
-//                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
-//                     sh '''
-//                         mvn -s $WORKSPACE/settings.xml test jacoco:report \
-//                         -Dspring.profiles.active=test \
-//                         -Dtest=!UserInfoControllerAutomationTest
-//                     '''
-//                 }
-//             }
-//             post {
-//                 always {
-//                     junit '**/target/surefire-reports/*.xml'
-//                 }
-//             }
-//         }
+        stage('Unit Tests') {
+            steps {
+                withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
+                    sh '''
+                        mvn -s $WORKSPACE/settings.xml test jacoco:report \
+                        -Dspring.profiles.active=test
+                    '''
+                }
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
 
         stage('Coverage Check') {
             steps {
