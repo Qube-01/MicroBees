@@ -35,7 +35,7 @@ public class UserInfoControllerAutomationTest {
                 .given()
                 .queryParam("tenantId", TENANT_ID)
                 .contentType("application/json")
-                .body("{ \"name\": \"Jane\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
+                .body("{ \"name\": \"jane3\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
                 .post("/userInfo");
         assertThat(response.statusCode(), is(200));
         assertThat(response.body().jsonPath().getString("mailId"), equalTo(testMail));
@@ -48,7 +48,7 @@ public class UserInfoControllerAutomationTest {
                 .given()
                 .queryParam("tenantId", TENANT_ID)
                 .contentType("application/json")
-                .body("{ \"name\": \"Jane\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
+                .body("{ \"name\": \"jane3\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
                 .post("/userInfo");
 
         // Second call to create (should throw duplicate)
@@ -56,7 +56,7 @@ public class UserInfoControllerAutomationTest {
                 .given()
                 .queryParam("tenantId", TENANT_ID)
                 .contentType("application/json")
-                .body("{ \"name\": \"Jane\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
+                .body("{ \"name\": \"jane3\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
                 .post("/userInfo");
         assertThat(dupResponse.statusCode(), is(400));
     }
@@ -68,7 +68,7 @@ public class UserInfoControllerAutomationTest {
                 .given()
                 .queryParam("tenantId", TENANT_ID)
                 .contentType("application/json")
-                .body("{ \"name\": \"Jane\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
+                .body("{ \"name\": \"jane3\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
                 .post("/userInfo");
 
         // Now get token
@@ -76,7 +76,7 @@ public class UserInfoControllerAutomationTest {
                 .given()
                 .queryParam("tenantId", TENANT_ID)
                 .contentType("application/json")
-                .body("{ \"name\": \"Jane\", \"mailId\": \"" + testMail + "\" }")
+                .body("{ \"name\": \"jane3\", \"mailId\": \"" + testMail + "\" }")
                 .post("/token");
         assertThat(tokenResponse.statusCode(), is(200));
         assertThat(tokenResponse.body().jsonPath().getString("access_token"), not(emptyOrNullString()));
@@ -88,7 +88,7 @@ public class UserInfoControllerAutomationTest {
                 .given()
                 .queryParam("tenantId", TENANT_ID)
                 .contentType("application/json")
-                .body("{ \"name\": \"Ghost\", \"mailId\": \"ghost@noexist.com\" }")
+                .body("{ \"name\": \"ghost3\", \"mailId\": \"ghost@noexist.com\" }")
                 .post("/token");
         assertThat(response.statusCode(), is(401));
     }
@@ -100,7 +100,7 @@ public class UserInfoControllerAutomationTest {
                 .given()
                 .queryParam("tenantId", TENANT_ID)
                 .contentType("application/json")
-                .body("{ \"name\": \"Jane\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
+                .body("{ \"name\": \"jane3\", \"lastName\": \"Doe\", \"mailId\": \"" + testMail + "\" }")
                 .post("/userInfo");
 
         // Delete the user
@@ -119,7 +119,7 @@ public class UserInfoControllerAutomationTest {
         Response response = RestAssured
                 .given()
                 .queryParam("tenantId", TENANT_ID)
-                .queryParam("email", "ghost_" + System.currentTimeMillis() + "@automation.com")
+                .queryParam("email", "ghost3_" + System.currentTimeMillis() + "@automation.com")
                 .delete("/userInfo");
         assertThat(response.statusCode(), is(404));
         assertThat(response.body().asString(), containsString("User not found."));
