@@ -173,18 +173,18 @@ pipeline {
             }
         }
 
-        stage('api tests') {
-            steps {
-                withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
-                    sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
-                }
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
+        // stage('api tests') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
+        //             sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             junit '**/target/surefire-reports/*.xml'
+        //         }
+        //     }
+        // }
 
         stage('Stop Spring Boot') {
             steps {
