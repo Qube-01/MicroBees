@@ -89,6 +89,7 @@ pipeline {
             }
         }
 
+        // 🟢 REQUIRED CHANGE IS HERE: Remove -Dsonar.organization and -Dsonar.projectKey
         stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SONAR_AUTH_TOKEN', variable: 'SONAR_AUTH_TOKEN')]) {
@@ -96,10 +97,8 @@ pipeline {
                         sh '''
                             mvn -s $WORKSPACE/settings.xml -B \
                               org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-                              -Dsonar.login=${SONAR_AUTH_TOKEN} \
-                              -Dsonar.host.url=https://sonarcloud.io \
-                              -Dsonar.organization=qube-01 \
-                              -Dsonar.projectKey=Qube-01_MicroBees
+                              -Dsonar.login=${SONAR_AUTH_TOKEN} 
+                              // Organization, Project Key, and Host URL are read from pom.xml
                         '''
                     }
                 }
@@ -197,24 +196,7 @@ pipeline {
             }
         }
 
-        //         stage('User Approval for CF Deployment') {
-        //             steps {
-        //                 script {
-        //                     def userInput = input(
-        //                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
-        //                         parameters: [
-        //                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
-        //                         ]
-        //                     )
-        //
-        //                     if (userInput == 'Decline') {
-        //                         error "Deployment declined by user."
-        //                     } else {
-        //                         echo "User approved deployment. Continuing..."
-        //                     }
-        //                 }
-        //             }
-        //         }
+        // stage('User Approval for CF Deployment') is commented out
 
         stage('Login to CF') {
             steps {
@@ -263,4 +245,3 @@ pipeline {
         }
     }
 }
-
