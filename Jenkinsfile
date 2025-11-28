@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Make sure Jenkins can see Homebrew-installed CF CLI
+        PATH = "/opt/homebrew/bin:/opt/homebrew/opt/cf-cli/bin:${env.PATH}"
+    }
+
     tools {
         jdk 'jdk17'
         maven 'Maven3'
@@ -141,7 +146,6 @@ pipeline {
                     sh '''
                       export MONGODB_URI="${MONGODB_URI}"
 
-                      # Optional: check if port 8000 is free before start
                       if lsof -i :8000; then
                         echo "Port 8000 in use, killing existing process."
                         lsof -ti :8000 | xargs kill -9
@@ -173,18 +177,18 @@ pipeline {
             }
         }
 
-        // stage('api tests') {
-        //     steps {
-        //         withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
-        //             sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             junit '**/target/surefire-reports/*.xml'
-        //         }
-        //     }
-        // }
+        stage('api tests') {
+            steps {
+                withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
+                    sh 'mvn -s $WORKSPACE/settings.xml test -Dspring.profiles.active=test -Dtest=UserInfoControllerAutomationTest'
+                }
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
 
         stage('Stop Spring Boot') {
             steps {
@@ -197,25 +201,6 @@ pipeline {
             }
         }
 
-        //         stage('User Approval for CF Deployment') {
-        //             steps {
-        //                 script {
-        //                     def userInput = input(
-        //                         id: 'Approval', message: 'Approve deployment to CF?', ok: 'Deploy',
-        //                         parameters: [
-        //                             choice(name: 'Approval', choices: ['Approve', 'Decline'], description: 'Select an option')
-        //                         ]
-        //                     )
-        //
-        //                     if (userInput == 'Decline') {
-        //                         error "Deployment declined by user."
-        //                     } else {
-        //                         echo "User approved deployment. Continuing..."
-        //                     }
-        //                 }
-        //             }
-        //         }
-
         stage('Login to CF') {
             steps {
                 withCredentials([
@@ -225,6 +210,11 @@ pipeline {
                     string(credentialsId: 'CF_SPACE', variable: 'CF_SPACE')
                 ]) {
                     sh '''
+                        export PATH=/opt/homebrew/bin:/opt/homebrew/opt/cf-cli/bin:$PATH
+
+                        echo "Using CF at: $(which cf)"
+                        cf --version
+
                         cf login -a ${CF_ENV} -u ${CF_USER} -p ${CF_PASSWORD} -s ${CF_SPACE}
                     '''
                 }
@@ -240,16 +230,23 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
-                    sh 'cf push microbees-service --no-start'
-                    sh 'cf set-env microbees-service MONGODB_URI ${MONGODB_URI}'
-                    sh 'cf start microbees-service'
+                    sh '''
+                        export PATH=/opt/homebrew/bin:/opt/homebrew/opt/cf-cli/bin:$PATH
+
+                        cf push microbees-service --no-start
+                        cf set-env microbees-service MONGODB_URI ${MONGODB_URI}
+                        cf start microbees-service
+                    '''
                 }
             }
         }
 
         stage('Create Application Route') {
             steps {
-                sh 'cf map-route microbees-service de.a9sapp.eu --hostname microbees-service-live'
+                sh '''
+                    export PATH=/opt/homebrew/bin:/opt/homebrew/opt/cf-cli/bin:$PATH
+                    cf map-route microbees-service de.a9sapp.eu --hostname microbees-service-live
+                '''
             }
         }
     }
@@ -263,4 +260,3 @@ pipeline {
         }
     }
 }
-
